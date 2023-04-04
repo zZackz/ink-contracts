@@ -10,7 +10,7 @@ pub const STORAGE_KEY: u32 = openbrush::storage_unique_key!(Data);
 pub struct Data {
     pub max_wallet: Balance,
     pub max_tx: Balance,
-    pub fee: u8,
+    pub fee: u128,
 }
 
 impl<T> Psp22Fee for T
@@ -40,13 +40,13 @@ where
     }
 
     #[openbrush::modifiers(only_owner)]
-    fn set_fee(&mut self, fee: u8) -> Result<(), PSP22Error> {
+    fn set_fee(&mut self, fee: u128) -> Result<(), PSP22Error> {
         self.data::<Data>().fee = fee;
 
         Ok(())
     }
 
-    fn get_fee(&mut self) -> u8 {
+    fn get_fee(&mut self) -> u128 {
         self.data::<Data>().fee
     }
 }

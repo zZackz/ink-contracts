@@ -19,8 +19,8 @@ pub trait Psp22Fee {
     fn get_max_tx(&mut self) -> Balance;
 
     #[ink(message)]
-    fn set_fee(&mut self, fee: u8) -> Result<(), PSP22Error>;
+    fn set_fee(&mut self, fee: u128) -> Result<(), PSP22Error>;
 
     #[ink(message)]
-    fn get_fee(&mut self) -> u8;
+    fn get_fee(&mut self) -> u128;
 }

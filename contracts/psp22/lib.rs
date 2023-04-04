@@ -41,7 +41,7 @@ pub mod my_psp22 {
             decimal: u8,
             max_wallet: u128,
             max_tx: u128,
-            fee: u8,
+            fee: u128,
         ) -> Self {
             let mut _instance = Self::default();
             _instance
@@ -61,17 +61,10 @@ pub mod my_psp22 {
     impl Psp22Fee for Contract {}
     impl PSP22 for Contract {
         #[ink(message)]
-        fn transfer(
-            &mut self,
-            to: AccountId,
-            value: Balance,
-            data: Vec<u8>,
-        ) -> Result<(), PSP22Error> {
+        fn transfer(&mut self, to: AccountId, value: Balance, data: Vec<u8>) -> Result<(), PSP22Error> {
             let from = self.env().caller();
 
             let balance_wallet = self._balance_of(&to);
-
-            let total_supply = self.total_supply();
 
             if value > self.psp22_fee.max_tx {
                 return Err(PSP22Error::InsufficientBalance);
@@ -83,11 +76,7 @@ pub mod my_psp22 {
 
             let is_tax = to != ZERO_ADDRESS.into() && from != ZERO_ADDRESS.into();
 
-            let tax = if is_tax {
-                value / (self.psp22_fee.fee as u128)
-            } else {
-                0
-            };
+            let tax = if is_tax { (value * self.psp22_fee.fee) / 100 } else { 0 };
 
             self._transfer_from_to(from, self.ownable.owner, tax, data.clone())?;
             self._transfer_from_to(from, to, value - tax, data)?;
